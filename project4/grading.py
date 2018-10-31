@@ -248,7 +248,7 @@ to follow your instructor's guidelines to receive credit on your project.
     if not raw:
         # We assume raw messages, formatted for HTML, are printed separately
         if self.mute: util.unmutePrint()
-        print '*** ' + message
+        print '*** %s' % message
         if self.mute: util.mutePrint()
         message = cgi.escape(message)
     self.messages[self.currentQuestion].append(message)
