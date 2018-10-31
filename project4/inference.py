@@ -264,8 +264,46 @@ class ParticleFilter(InferenceModule):
         Storing your particles as a Counter (where there could be an associated
         weight with each position) is incorrect and may produce errors.
         """
-        "*** YOUR CODE HERE ***"
+        
+        # a particle is a ghost position
+        self.particles = [ (-1, -1) for a in range(self.numParticles) ]
+        
+        # check if more particles or more positions
+        index = 0
+        for particleIndex in range(len(self.particles)):
+            self.particles[particleIndex] = self.legalPositions[index]
+            if index >= len(self.legalPositions):
+                break
+            else:
+                index += 1
 
+        """
+        pos = 0    
+        for particleIndex in self.particles.indices:
+            self.particles[particle] = self.legalPositions[pos]
+            pos += 1
+        """
+        
+        """
+        # average number of positions that should be assigned to a particle
+        averagePos = self.numParticles/self.legalPositions
+
+        index = 0
+        
+        while remainingParticles > 0:
+            if averagePos > 0:
+                
+            else:
+                
+        
+        for pos in self.legalPositions:
+            
+        
+        for particle in self.particles:
+            for i in range(averagePos):
+                particle.append(
+        """
+        
     def observe(self, observation, gameState):
         """
         Update beliefs based on the given distance observation. Make sure to
@@ -296,8 +334,21 @@ class ParticleFilter(InferenceModule):
         noisyDistance = observation
         emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        allPossible = util.Counter()
+        
+        if noisyDistance == None:
+			# iterate through all particles and set to self.getJailPosition
+            for particleIndex in self.particle.indices:
+                self.particles[particleIndex] = self.getJailPosition()
+        else:
+			for p in self.legalPositions:
+				trueDistance = util.manhattanDistance(p, pacmanPosition)
+				if emissionModel[trueDistance] > 0:
+					allPossible[p] = emissionModel[trueDistance]*self.beliefs[p]
+
+        allPossible.normalize()
+        self.beliefs = allPossible
 
     def elapseTime(self, gameState):
         """
