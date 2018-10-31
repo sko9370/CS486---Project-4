@@ -179,7 +179,7 @@ class GreedyBustersAgent(BustersAgent):
         closestDistance = -1
         for pos in bestGhostPositions:
             distance = self.distancer.getDistance(pos, pacmanPosition)
-            if distance < closestDistance | closestDistance == -1:
+            if distance < closestDistance or closestDistance == -1:
                 closestDistance = distance
                 closestPos = pos
         
@@ -187,8 +187,8 @@ class GreedyBustersAgent(BustersAgent):
         bestDistance = -1
         for action in legal:
             successorPosition = Actions.getSuccessor(pacmanPosition, action)
-            distance = self.distancer.getDistance(successorPosition, closestDistance)
-            if distance < bestDistance | bestDistance == -1:
+            distance = self.distancer.getDistance(successorPosition, closestPos)
+            if distance < bestDistance or bestDistance == -1:
                 bestDistance = distance
                 bestAction = action
                 
