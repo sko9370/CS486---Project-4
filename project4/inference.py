@@ -304,11 +304,29 @@ class ParticleFilter(InferenceModule):
         distance between a particle and Pacman's position.
         """
         noisyDistance = observation
+        emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
 
-        allPossible = util.Counter()
-        allPossible.normalize()
-        self.beliefs = allPossible
+        initcounter = util.Counter()
+        oldbeliefs = self.getBeliefDistribution()
+        if  noisyDistance == None:
+            for p in self.particles:
+                initcounter[p] = 0
+                initcounter[self.getJailPosition()] += 1.0
+        else:
+            for p in self.legalPositions:
+                dist = util.manhattanDistance(p, pacmanPosition)
+                initcounter[p] += emissionModel[dist]*oldbeliefs[p]
+            if initcounter.totalCount==0:
+                self.initializeUniformly(gameState)
+            else:
+                pl = []
+                count = 0
+                while count<self.numParticles:
+                    pl.append(util.sample(initcounter))
+                    count+=1
+                self.particles = pl
+
 
     def elapseTime(self, gameState):
         """
