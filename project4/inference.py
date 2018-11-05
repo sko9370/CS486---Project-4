@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -219,9 +219,9 @@ class ExactInference(InferenceModule):
         are used and how they combine to give us a belief distribution over new
         positions after a time update from a particular position.
         """
-        
+
         allPossible = util.Counter()
-        
+
         for oldPos in self.legalPositions:
             newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, oldPos))
             for newPos, prob in newPosDist.items():
@@ -251,7 +251,6 @@ class ParticleFilter(InferenceModule):
     def setNumParticles(self, numParticles):
         self.numParticles = numParticles
 
-
     def initializeUniformly(self, gameState):
         """
         Initializes a list of particles. Use self.numParticles for the number of
@@ -264,46 +263,46 @@ class ParticleFilter(InferenceModule):
         Storing your particles as a Counter (where there could be an associated
         weight with each position) is incorrect and may produce errors.
         """
-        
+
         # a particle is a ghost position
         self.particles = [ (-1, -1) for a in range(self.numParticles) ]
-        
+
         # check if more particles or more positions
         index = 0
         for particleIndex in range(len(self.particles)):
             self.particles[particleIndex] = self.legalPositions[index]
-            if index >= len(self.legalPositions):
+            if index == len(self.legalPositions) - 1:
                 break
             else:
                 index += 1
 
         """
-        pos = 0    
+        pos = 0
         for particleIndex in self.particles.indices:
             self.particles[particle] = self.legalPositions[pos]
             pos += 1
         """
-        
+
         """
         # average number of positions that should be assigned to a particle
         averagePos = self.numParticles/self.legalPositions
 
         index = 0
-        
+
         while remainingParticles > 0:
             if averagePos > 0:
-                
+
             else:
-                
-        
+
+
         for pos in self.legalPositions:
-            
-        
+
+
         for particle in self.particles:
             for i in range(averagePos):
                 particle.append(
         """
-        
+
     def observe(self, observation, gameState):
         """
         Update beliefs based on the given distance observation. Make sure to
@@ -334,9 +333,9 @@ class ParticleFilter(InferenceModule):
         noisyDistance = observation
         emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
-        
+
         allPossible = util.Counter()
-        
+
         if noisyDistance == None:
 			# iterate through all particles and set to self.getJailPosition
             for particleIndex in self.particle.indices:
@@ -587,4 +586,3 @@ def setGhostPositions(gameState, ghostPositions):
         conf = game.Configuration(pos, game.Directions.STOP)
         gameState.data.agentStates[index + 1] = game.AgentState(conf, False)
     return gameState
-
