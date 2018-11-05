@@ -265,12 +265,12 @@ class ParticleFilter(InferenceModule):
         """
 
         # a particle is a ghost position
-        self.particles = [ (-1, -1) for a in range(self.numParticles) ]
+        self.particles = []
 
         # check if more particles or more positions
         index = 0
-        for particleIndex in range(len(self.particles)):
-            self.particles[particleIndex] = self.legalPositions[index]
+        for i in range(self.numParticles):
+            self.particles.append(self.legalPositions[index])
             if index == len(self.legalPositions) - 1:
                 index = 0
             else:
@@ -307,24 +307,23 @@ class ParticleFilter(InferenceModule):
         emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
 
-        initcounter = util.Counter()
-        oldbeliefs = self.getBeliefDistribution()
-        if  noisyDistance == None:
-            for x in range(0,self.numParticles):
-                self.particles[x]=self.getJailPosition()
+        if noisyDistance == None:
+            for x in range(self.numParticles):
+                self.particles[x] = self.getJailPosition()
         else:
-            for p in self.legalPositions:
-                dist = util.manhattanDistance(p, pacmanPosition)
-                initcounter[p] += emissionModel[dist]*oldbeliefs[p]
-            if initcounter.totalCount==0:
+            initcounter = util.Counter()
+            oldbeliefs = self.getBeliefDistribution()
+            for particle in self.particles:
+                dist = util.manhattanDistance(particle, pacmanPosition)
+                initcounter[particle] = emissionModel[dist]*oldbeliefs[particle]
+            initcounter.normalize()
+            if initcounter.totalCount == 0:
                 self.initializeUniformly(gameState)
+            # resample
             else:
-                pl = []
-                count = 0
-                while count<self.numParticles:
-                    pl.append(util.sample(initcounter))
-                    count+=1
-                self.particles = pl
+                self.particles = []
+                for i in range(self.numParticles):
+                    self.particles.append(util.sample(initcounter, oldbeliefs))
 
 
     def elapseTime(self, gameState):
@@ -357,6 +356,8 @@ class ParticleFilter(InferenceModule):
             self.belief[particle] += 1.0
 
         self.belief.normalize()
+
+        #print(self.belief)
 
         return self.belief
 
