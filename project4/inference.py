@@ -310,9 +310,8 @@ class ParticleFilter(InferenceModule):
         initcounter = util.Counter()
         oldbeliefs = self.getBeliefDistribution()
         if  noisyDistance == None:
-            for p in self.particles:
-                initcounter[p] = 0
-                initcounter[self.getJailPosition()] += 1.0
+            for x in range(0,self.numParticles):
+                self.particles[x]=self.getJailPosition()
         else:
             for p in self.legalPositions:
                 dist = util.manhattanDistance(p, pacmanPosition)
