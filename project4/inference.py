@@ -272,36 +272,9 @@ class ParticleFilter(InferenceModule):
         for particleIndex in range(len(self.particles)):
             self.particles[particleIndex] = self.legalPositions[index]
             if index == len(self.legalPositions) - 1:
-                break
+                index = 0
             else:
                 index += 1
-
-        """
-        pos = 0
-        for particleIndex in self.particles.indices:
-            self.particles[particle] = self.legalPositions[pos]
-            pos += 1
-        """
-
-        """
-        # average number of positions that should be assigned to a particle
-        averagePos = self.numParticles/self.legalPositions
-
-        index = 0
-
-        while remainingParticles > 0:
-            if averagePos > 0:
-
-            else:
-
-
-        for pos in self.legalPositions:
-
-
-        for particle in self.particles:
-            for i in range(averagePos):
-                particle.append(
-        """
 
     def observe(self, observation, gameState):
         """
@@ -331,21 +304,9 @@ class ParticleFilter(InferenceModule):
         distance between a particle and Pacman's position.
         """
         noisyDistance = observation
-        emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
 
         allPossible = util.Counter()
-
-        if noisyDistance == None:
-			# iterate through all particles and set to self.getJailPosition
-            for particleIndex in self.particle.indices:
-                self.particles[particleIndex] = self.getJailPosition()
-        else:
-			for p in self.legalPositions:
-				trueDistance = util.manhattanDistance(p, pacmanPosition)
-				if emissionModel[trueDistance] > 0:
-					allPossible[p] = emissionModel[trueDistance]*self.beliefs[p]
-
         allPossible.normalize()
         self.beliefs = allPossible
 
@@ -373,8 +334,14 @@ class ParticleFilter(InferenceModule):
         essentially converts a list of particles into a belief distribution (a
         Counter object)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.belief = util.Counter()
+
+        for particle in self.particles:
+            self.belief[particle] += 1.0
+
+        self.belief.normalize()
+
+        return self.belief
 
 class MarginalInference(InferenceModule):
     """
