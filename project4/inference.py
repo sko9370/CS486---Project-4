@@ -323,7 +323,7 @@ class ParticleFilter(InferenceModule):
                 initcounter.normalize()
                 self.particles = []
                 for i in range(self.numParticles):
-                    self.particles.append(util.sample(initcounter, oldbeliefs))
+                    self.particles.append(util.sample(initcounter))
 
 
     def elapseTime(self, gameState):
@@ -341,7 +341,20 @@ class ParticleFilter(InferenceModule):
         a belief distribution.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        oldbeliefs = self.getBeliefDistribution()
+        newParticles = []
+
+        index = 0
+        for particle in self.particles:
+            newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, particle))
+            newParticles.append(util.sample(newPosDist))
+            if index == len(self.legalPositions) - 1:
+                index = 0
+            else:
+                index += 1
+
+        self.particles = newParticles
 
     def getBeliefDistribution(self):
         """
@@ -356,8 +369,6 @@ class ParticleFilter(InferenceModule):
             self.belief[particle] += 1.0
 
         self.belief.normalize()
-
-        #print(self.belief)
 
         return self.belief
 
