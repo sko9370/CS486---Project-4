@@ -316,11 +316,11 @@ class ParticleFilter(InferenceModule):
             for particle in self.particles:
                 dist = util.manhattanDistance(particle, pacmanPosition)
                 initcounter[particle] = emissionModel[dist]*oldbeliefs[particle]
-            initcounter.normalize()
-            if initcounter.totalCount == 0:
+            if initcounter.totalCount() == 0:
                 self.initializeUniformly(gameState)
             # resample
             else:
+                initcounter.normalize()
                 self.particles = []
                 for i in range(self.numParticles):
                     self.particles.append(util.sample(initcounter, oldbeliefs))
