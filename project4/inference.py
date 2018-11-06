@@ -520,7 +520,7 @@ class JointParticleFilter:
                     beliefs[particle] += emissionModels[ghost][dist]*oldBeliefs[particle]
 
                 if beliefs.totalCount() == 0:
-                    self.initializeUniformly(gameState)
+                    self.initializeParticles(gameState)
 
                 # resample
                 else:
