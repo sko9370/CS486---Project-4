@@ -340,12 +340,12 @@ class ParticleFilter(InferenceModule):
         util.sample(Counter object) is a helper method to generate a sample from
         a belief distribution.
         """
-        "*** YOUR CODE HERE ***"
 
         oldbeliefs = self.getBeliefDistribution()
         newParticles = []
 
         index = 0
+        # particle IS the old position
         for particle in self.particles:
             newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, particle))
             newParticles.append(util.sample(newPosDist))
