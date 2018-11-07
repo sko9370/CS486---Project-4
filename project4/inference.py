@@ -455,7 +455,7 @@ class JointParticleFilter:
 
         # shuffle
         shuffle(products)
-        self.particles = products[:self.numGhosts-1]
+        self.particles = products[:self.numParticles+1]
 
 
     def addGhostAgent(self, agent):
@@ -504,6 +504,7 @@ class JointParticleFilter:
         emissionModels = [busters.getObservationDistribution(dist) for dist in noisyDistances]
 
         "*** YOUR CODE HERE ***"
+
         for ghost in range(self.numGhosts):
 
             # set current ghost pos in all particles to jailPosition
@@ -515,12 +516,18 @@ class JointParticleFilter:
                 beliefs = util.Counter()
                 oldBeliefs = self.getBeliefDistribution()
 
+                # assign belief values
                 for particle in self.particles:
                     dist = util.manhattanDistance(particle[ghost], pacmanPosition)
                     beliefs[particle] += emissionModels[ghost][dist]*oldBeliefs[particle]
 
+                # reinitialize and set all dead ghosts to jail position
                 if beliefs.totalCount() == 0:
-                    self.initializeParticles(gameState)
+                    self.initializeParticles()
+                    for ghost in range(self.numGhosts):
+                        if noisyDistances[ghost] == None:
+                            for i in self.numParticles:
+                                self.particles[i] = getParticleWithGhostInJail(self.particles[i], ghost)
 
                 # resample
                 else:
