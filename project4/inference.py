@@ -450,13 +450,19 @@ class JointParticleFilter:
         self.particles = []
         products = []
 
-        for perm in product(self.legalPositions, repeat = self.numGhosts):
-            products.append(perm)
+        for prod in product(self.legalPositions, repeat = self.numGhosts):
+            products.append(prod)
 
-        # shuffle
+        # shuffle in place
         shuffle(products)
-        self.particles = products[:self.numParticles+1]
 
+        index = 0
+        for i in range(self.numParticles):
+            self.particles.append(products[index])
+            if index == len(products) - 1:
+                index = 0
+            else:
+                index += 1
 
     def addGhostAgent(self, agent):
         """
@@ -510,7 +516,7 @@ class JointParticleFilter:
             # set current ghost pos in all particles to jailPosition
             if noisyDistances[ghost] == None:
                 for i in range(self.numParticles):
-                    self.particles[i][ghost] = self.getJailPosition(ghost)
+                    self.particles[i] = self.getParticleWithGhostInJail(self.particles[i], ghost)
 
             else:
                 beliefs = util.Counter()
@@ -519,15 +525,15 @@ class JointParticleFilter:
                 # assign belief values
                 for particle in self.particles:
                     dist = util.manhattanDistance(particle[ghost], pacmanPosition)
-                    beliefs[particle] += emissionModels[ghost][dist]*oldBeliefs[particle]
+                    beliefs[particle] = emissionModels[ghost][dist]*oldBeliefs[particle]
 
                 # reinitialize and set all dead ghosts to jail position
                 if beliefs.totalCount() == 0:
                     self.initializeParticles()
                     for ghost in range(self.numGhosts):
                         if noisyDistances[ghost] == None:
-                            for i in self.numParticles:
-                                self.particles[i] = getParticleWithGhostInJail(self.particles[i], ghost)
+                            for i in range(self.numParticles):
+                                self.particles[i] = self.getParticleWithGhostInJail(self.particles[i], ghost)
 
                 # resample
                 else:
@@ -597,6 +603,11 @@ class JointParticleFilter:
 
             "*** YOUR CODE HERE ***"
 
+            for i in range(len(newParticle)):
+                newGamestate = setGhostPositions(gameState, newParticle)
+                newPosDist = getPositionDistributionForGhost(newGamestate, i, self.ghostAgents[i])
+                newParticle[i] = util.sample(newPosDist)
+
             "*** END YOUR CODE HERE ***"
             newParticles.append(tuple(newParticle))
         self.particles = newParticles
@@ -604,13 +615,13 @@ class JointParticleFilter:
     def getBeliefDistribution(self):
         "*** YOUR CODE HERE ***"
 
-        self.belief = util.Counter()
+        belief = util.Counter()
         # each particle is a tuple of however many ghosts there are
         for particle in self.particles:
-            self.belief[particle] += 1.0
+            belief[particle] += 1.0
 
-        self.belief.normalize()
-        return self.belief
+        belief.normalize()
+        return belief
 
 
 # One JointInference module is shared globally across instances of MarginalInference
